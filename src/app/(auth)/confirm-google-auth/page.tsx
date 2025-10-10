@@ -29,7 +29,7 @@ const Page = () => {
     })();
   }, []);
 
-  return nul;
+  return null;
 };
 
 export default Page;
