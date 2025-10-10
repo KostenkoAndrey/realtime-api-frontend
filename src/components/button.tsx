@@ -4,22 +4,22 @@ export interface ButtonProps {
   children?: React.ReactNode | string;
   className?: string;
   type?: 'submit' | 'button';
-  onClick?: () => void;
   disabled?: boolean;
+  onClick?: () => void;
 }
 
 const Button = ({
   className,
   type = 'button',
   children,
-  onClick,
   disabled = false,
+  onClick,
 }: ButtonProps) => {
   return (
     <button
       type={type}
-      onClick={onClick}
       disabled={disabled}
+      onClick={onClick}
       className={`p-[10px] font-medium text-[14px] leading-[1.42] rounded-xl bg-[#006fee] w-full transition-all duration-300 ease-in-out 
         ${
           disabled
