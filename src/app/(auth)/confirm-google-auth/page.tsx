@@ -23,17 +23,13 @@ const Page = () => {
         .then(() => {
           router.push('/dashboard');
         })
-        .catch((err) => {
+        .catch(() => {
           router.push('/login');
         });
     })();
   }, []);
 
-  return (
-    <div className='flex flex-col items-center justify-center h-screen text-white text-3xl'>
-      Авторизация через Google...
-    </div>
-  );
+  return nul;
 };
 
 export default Page;
