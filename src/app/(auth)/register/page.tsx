@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import AuthForm from '@/components/authForm';
@@ -8,19 +8,23 @@ import TextInput from '@/components/textInput';
 import PasswordInput from '@/components/passwordInput';
 import Button from '@/components/button';
 import GoogleAuthButton from '@/components/googleAuthButton';
-import { registerThunk } from '@/redux/auth/operations';
+import {
+  authenticateWithGoogleThunk,
+  registerThunk,
+} from '@/redux/auth/operations';
 import { useAppDispatch } from '@/hooks/useReduxHooks';
 import { SignUpFormData } from '@/types/auth';
 import { useRouter } from 'next/navigation';
 
 const Page = () => {
+  const [loading, setLoading] = useState({ register: false, google: false });
   const dispatch = useAppDispatch();
   const router = useRouter();
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<SignUpFormData>({
     mode: 'onBlur',
     reValidateMode: 'onChange',
@@ -28,9 +32,32 @@ const Page = () => {
 
   const onSubmit = async (data: SignUpFormData) => {
     try {
+      setLoading((prev) => ({ ...prev, register: true }));
       await dispatch(registerThunk(data)).unwrap();
       router.push('/login');
-    } catch {}
+    } catch {
+      setLoading((prev) => ({ ...prev, register: false }));
+    } finally {
+      setLoading((prev) => ({ ...prev, register: false }));
+    }
+  };
+
+  const authenticateWithGoogle = async () => {
+    try {
+      setLoading((prev) => ({ ...prev, google: true }));
+      const resultAction = await dispatch(authenticateWithGoogleThunk());
+      if (authenticateWithGoogleThunk.fulfilled.match(resultAction)) {
+        const googleUrl = resultAction.payload;
+        if (googleUrl) {
+          window.location.href = googleUrl;
+        }
+      }
+    } catch (err) {
+      setLoading((prev) => ({ ...prev, google: false }));
+      console.error('RESET ERROR:', err);
+    } finally {
+      setLoading((prev) => ({ ...prev, google: false }));
+    }
   };
 
   return (
@@ -78,12 +105,20 @@ const Page = () => {
           <>
             <Button
               type='submit'
-              disabled={isSubmitting}
+              disabled={loading.google || loading.register}
               className='text-white hover:text-black hover:bg-[#007bff]'
             >
-              {isSubmitting ? 'Signing up...' : 'Sign up'}
+              {loading.register ? 'Signing up...' : 'Sign up'}
             </Button>
-            <GoogleAuthButton />
+            <GoogleAuthButton
+              onClick={authenticateWithGoogle}
+              disabled={loading.register || loading.google}
+              label={
+                loading.google
+                  ? 'Continuing with Google...'
+                  : 'Log in with Google'
+              }
+            />
           </>
         }
         linkText={'Log in'}

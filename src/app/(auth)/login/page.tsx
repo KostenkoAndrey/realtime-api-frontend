@@ -32,13 +32,13 @@ const Page = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setLoading((prev) => ({ ...prev, ['login']: true }));
+      setLoading((prev) => ({ ...prev, login: true }));
       await dispatch(loginThunk(data)).unwrap();
       router.push('/dashboard');
     } catch {
-      setLoading((prev) => ({ ...prev, ['login']: false }));
+      setLoading((prev) => ({ ...prev, login: false }));
     } finally {
-      setLoading((prev) => ({ ...prev, ['login']: false }));
+      setLoading((prev) => ({ ...prev, login: false }));
     }
   };
 
@@ -95,9 +95,7 @@ const Page = () => {
             <Button
               type='submit'
               disabled={loading.login || loading.google}
-              className={`text-white hover:text-black hover:bg-[#007bff] ${
-                isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
-              }`}
+              className={'text-white hover:text-black hover:bg-[#007bff]'}
             >
               {loading.login ? 'Logging in...' : 'Log in'}
             </Button>
