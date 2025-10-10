@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { confirmGoogleAuthThunk } from '@/redux/auth/operations';
 import { useAppDispatch } from '@/hooks/useReduxHooks';

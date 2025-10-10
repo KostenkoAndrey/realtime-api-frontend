@@ -10,21 +10,23 @@ import TextInput from '@/components/textInput';
 import PasswordInput from '@/components/passwordInput';
 import Button from '@/components/button';
 import GoogleAuthButton from '@/components/googleAuthButton';
-import {
-  authenticateWithGoogleThunk,
-  loginThunk,
-} from '@/redux/auth/operations';
+import { loginThunk } from '@/redux/auth/operations';
 import { useAppDispatch } from '@/hooks/useReduxHooks';
 import { useRouter } from 'next/navigation';
+import { authenticateWithGoogle } from '@/utils/authenticateWithGoogle';
 
 const Page = () => {
-  const [loading, setLoading] = useState({ login: false, google: false });
+  const [loading, setLoading] = useState({
+    login: false,
+    google: false,
+    isRedirecting: false,
+  });
   const dispatch = useAppDispatch();
   const router = useRouter();
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     mode: 'onBlur',
     reValidateMode: 'onChange',
@@ -34,29 +36,14 @@ const Page = () => {
     try {
       setLoading((prev) => ({ ...prev, login: true }));
       await dispatch(loginThunk(data)).unwrap();
+      setLoading((prev) => ({ ...prev, isRedirecting: true }));
       router.push('/dashboard');
     } catch {
       setLoading((prev) => ({ ...prev, login: false }));
     } finally {
-      setLoading((prev) => ({ ...prev, login: false }));
-    }
-  };
-
-  const authenticateWithGoogle = async () => {
-    try {
-      setLoading((prev) => ({ ...prev, google: true }));
-      const resultAction = await dispatch(authenticateWithGoogleThunk());
-      if (authenticateWithGoogleThunk.fulfilled.match(resultAction)) {
-        const googleUrl = resultAction.payload;
-        if (googleUrl) {
-          window.location.href = googleUrl;
-        }
+      if (!loading.isRedirecting) {
+        setLoading((prev) => ({ ...prev, login: false }));
       }
-    } catch (err) {
-      setLoading((prev) => ({ ...prev, google: false }));
-      console.error('RESET ERROR:', err);
-    } finally {
-      setLoading((prev) => ({ ...prev, google: false }));
     }
   };
 
@@ -94,14 +81,18 @@ const Page = () => {
           <>
             <Button
               type='submit'
-              disabled={loading.login || loading.google}
+              disabled={
+                loading.login || loading.google || loading.isRedirecting
+              }
               className={'text-white hover:text-black hover:bg-[#007bff]'}
             >
               {loading.login ? 'Logging in...' : 'Log in'}
             </Button>
             <GoogleAuthButton
-              onClick={authenticateWithGoogle}
-              disabled={loading.login || loading.google}
+              onClick={() => authenticateWithGoogle(dispatch, setLoading)}
+              disabled={
+                loading.login || loading.google || loading.isRedirecting
+              }
               label={
                 loading.google
                   ? 'Continuing with Google...'

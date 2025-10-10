@@ -88,7 +88,7 @@ export const resetPasswordThunk = createAsyncThunk<
   { message: string },
   RequestEmail,
   { rejectValue: string }
->('auth/request-reset-email', async (email, thunkAPI) => {
+>('auth/request-reset-email', async ({ email }, thunkAPI) => {
   try {
     const { data } = await ApiAuth.post<{
       status: number;
@@ -125,13 +125,12 @@ export const confirmGoogleAuthThunk = createAsyncThunk<
   { rejectValue: string }
 >('auth/confirm-oauth', async ({ code }, thunkAPI) => {
   try {
-    console.log('📡 formData, который отправляем на бэк:', code);
     const { data } = await ApiAuth.post<{
       status: number;
       message: string;
       data: AuthResponse;
     }>('/auth/confirm-oauth', { code });
-    toast.success('✅ Google авторизация успешна!');
+    toast.success('✅ Google auth successfully!');
     return data.data;
   } catch (error) {
     console.error('❌ Error in confirmGoogleAuthThunk:', error);

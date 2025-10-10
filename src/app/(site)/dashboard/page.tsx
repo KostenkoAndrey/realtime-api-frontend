@@ -14,24 +14,33 @@ const Page = () => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const { email } = useAppSelector(selectorAuthUser);
-  console.log(email);
 
   const handleLogout = async () => {
-    try {
-      setIsLoggingOut((prev) => !prev);
-      await dispatch(logoutThunk()).unwrap();
-      router.push('/login');
-    } catch {}
+    setIsLoggingOut(true);
+
+    await dispatch(logoutThunk())
+      .unwrap()
+      .then(() => {
+        router.push('/login');
+      })
+      .catch((err) => {
+        setIsLoggingOut(false);
+        console.error('RESET ERROR:', err);
+      })
+      .finally(() => {
+        setIsLoggingOut(false);
+      });
   };
 
   const handleResetPassword = async () => {
-    console.log('EMAIL BEFORE RESET:', email);
-    try {
-      await dispatch(resetPasswordThunk(email)).unwrap();
-      router.push('/login');
-    } catch (err) {
-      console.error('RESET ERROR:', err);
-    }
+    dispatch(resetPasswordThunk({ email }))
+      .unwrap()
+      .then(() => {
+        router.push('/login');
+      })
+      .catch((err) => {
+        console.error('RESET ERROR:', err);
+      });
   };
 
   return (
