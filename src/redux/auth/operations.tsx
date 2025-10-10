@@ -13,6 +13,8 @@ export const ApiAuth = axios.create({
   baseURL: 'https://realtime-api-backend.onrender.com',
   withCredentials: true,
 });
+// 'https://realtime-api-backend.onrender.com'
+//'http://localhost:3000'
 
 // export const setAuthHeader = (token) =>
 //   (ApiAuth.defaults.headers.common.Authorization = `Bearer ${token}`);
