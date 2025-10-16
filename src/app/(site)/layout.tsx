@@ -1,14 +1,30 @@
-import React from 'react';
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+'use client';
+
+import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAppSelector } from '@/hooks/useReduxHooks';
 import { LayoutProps } from '@/types/layout';
 import Header from '@/components/header';
 import Navigation from '@/components/navigation';
+import { selectorIsLoggedIn } from '@/redux/auth/selectors';
 
-const Layout = async ({ children }: LayoutProps) => {
-  const cookieStore = await cookies();
-  const sessionId = cookieStore.get('sessionId');
-  if (!sessionId) redirect('/login');
+const Layout = ({ children }: LayoutProps) => {
+  const router = useRouter();
+  const isLoggedIn = useAppSelector(selectorIsLoggedIn);
+
+  useEffect(() => {
+    if (!isLoggedIn) {
+      router.push('/login');
+    }
+  }, [isLoggedIn, router]);
+
+  if (!isLoggedIn) {
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <div>Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <>
