@@ -4,6 +4,6 @@ export const config = {
 };
 
 // export const config = {
-//   apiUrl: 'https://realtime-api-backend.onrender.com',
-//   wsUrl: 'wss://realtime-api-backend.onrender.com',
+//   apiUrl: 'http://localhost:3000',
+//   wsUrl: 'ws://localhost:3000',
 // };
