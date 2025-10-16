@@ -5,6 +5,7 @@ import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 import purpleMic from '@/assets/lottie/voice-purple.json';
 import redMic from '@/assets/lottie/voice-red.json';
 import wavesAnimation from '@/assets/lottie/waves.json';
+import { config } from '@/config/api';
 
 const Page = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -42,8 +43,7 @@ const Page = () => {
         setDisplayedText('');
         fullTextRef.current = '';
         currentIndexRef.current = 0;
-
-        const ws = new WebSocket('ws:https://realtime-api-backend.onrender.com/audio');
+        const ws = new WebSocket(`${config.wsUrl}/audio`);
         ws.binaryType = 'arraybuffer';
         wsRef.current = ws;
 

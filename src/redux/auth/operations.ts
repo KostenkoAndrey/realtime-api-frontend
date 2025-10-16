@@ -2,9 +2,10 @@ import axios, { AxiosError } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-hot-toast';
 import { SignUpFormData, AuthResponse, LoginFormData, RequestEmail, GoogleFormData } from '@/types/auth';
+import { config } from '@/config/api';
 
 export const ApiAuth = axios.create({
-  baseURL: 'https://realtime-api-backend.onrender.com',
+  baseURL: config.apiUrl,
   withCredentials: true,
 });
 
