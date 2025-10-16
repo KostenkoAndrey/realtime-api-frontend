@@ -43,7 +43,7 @@ const Page = () => {
         fullTextRef.current = '';
         currentIndexRef.current = 0;
 
-        const ws = new WebSocket('ws://localhost:3000/audio');
+        const ws = new WebSocket('ws:https://realtime-api-backend.onrender.com/audio');
         ws.binaryType = 'arraybuffer';
         wsRef.current = ws;
 
