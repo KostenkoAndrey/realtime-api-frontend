@@ -4,8 +4,7 @@ import { toast } from 'react-hot-toast';
 import { SignUpFormData, AuthResponse, LoginFormData, RequestEmail, GoogleFormData } from '@/types/auth';
 
 export const ApiAuth = axios.create({
-  // baseURL: 'https://realtime-api-backend.onrender.com',
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://realtime-api-backend.onrender.com',
   withCredentials: true,
 });
 

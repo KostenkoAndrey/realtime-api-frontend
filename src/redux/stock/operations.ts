@@ -1,10 +1,9 @@
 import axios, { AxiosError } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { toast } from 'react-hot-toast';
 import { StocksResponse } from '@/types/stock';
 
 export const ApiStocks = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://realtime-api-backend.onrender.com',
   withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
