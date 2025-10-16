@@ -1,14 +1,11 @@
 'use client';
 
+import React, { useEffect, useState } from 'react';
 import { Provider } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from '@/redux/store';
-import React, { ReactNode, useEffect, useState } from 'react';
+import { PersistGate } from 'redux-persist/integration/react';
 import { Toaster } from 'react-hot-toast';
-
-interface ProvidersProps {
-  children: ReactNode;
-}
+import { ProvidersProps } from '@/types/layout';
 
 export default function Providers({ children }: ProvidersProps) {
   const [isClient, setIsClient] = useState(false);
@@ -22,11 +19,11 @@ export default function Providers({ children }: ProvidersProps) {
       {isClient ? (
         <PersistGate loading={null} persistor={persistor}>
           {children}
-          <Toaster position='top-center' reverseOrder={false} />
         </PersistGate>
       ) : (
-        children
+        <>{children}</>
       )}
+      <Toaster position='top-center' reverseOrder={false} />
     </Provider>
   );
 }

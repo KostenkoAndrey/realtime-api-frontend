@@ -8,7 +8,6 @@ const initialState: AuthState = {
     email: null,
   },
   isLoggedIn: false,
-  isRefreshing: false,
 };
 
 const slice = createSlice({
@@ -30,19 +29,6 @@ const slice = createSlice({
       .addCase(logoutThunk.fulfilled, () => {
         return initialState;
       });
-
-    // .addCase(refreshThunk.fulfilled, (state, action) => {
-    //   state.user.name = action.payload.name;
-    //   state.user.email = action.payload.email;
-    //   state.isLoggedIn = true;
-    //   state.isRefreshing = false;
-    // })
-    // .addCase(refreshThunk.pending, (state) => {
-    //   state.isRefreshing = true;
-    // })
-    // .addCase(refreshThunk.rejected, (state) => {
-    //   state.isRefreshing = false;
-    // });
   },
 });
 

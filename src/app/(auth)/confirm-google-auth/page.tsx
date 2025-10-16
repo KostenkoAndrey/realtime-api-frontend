@@ -21,7 +21,7 @@ const Page = () => {
       dispatch(confirmGoogleAuthThunk({ code }))
         .unwrap()
         .then(() => {
-          router.push('/dashboard');
+          router.push('/');
         })
         .catch(() => {
           router.push('/login');

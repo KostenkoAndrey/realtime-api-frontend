@@ -2,6 +2,7 @@ import React from 'react';
 import './globals.css';
 import { Inter } from 'next/font/google';
 import Providers from '@/app/providers';
+import { LayoutProps } from '@/types/layout';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -9,11 +10,7 @@ const inter = Inter({
   variable: '--font-inter',
 });
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: Readonly<LayoutProps>) {
   return (
     <html lang='en' className={inter.variable}>
       <body>

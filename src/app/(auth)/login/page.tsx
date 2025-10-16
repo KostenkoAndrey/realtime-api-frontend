@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { loginThunk } from '@/redux/auth/operations';
+import { useAppDispatch } from '@/hooks/useReduxHooks';
 
 import { LoginFormData } from '@/types/auth';
 
+import { authenticateWithGoogle } from '@/utils/authenticateWithGoogle';
 import AuthForm from '@/components/authForm';
 import TextInput from '@/components/textInput';
 import PasswordInput from '@/components/passwordInput';
 import Button from '@/components/button';
 import GoogleAuthButton from '@/components/googleAuthButton';
-import { loginThunk } from '@/redux/auth/operations';
-import { useAppDispatch } from '@/hooks/useReduxHooks';
-import { useRouter } from 'next/navigation';
-import { authenticateWithGoogle } from '@/utils/authenticateWithGoogle';
 
 const Page = () => {
   const [loading, setLoading] = useState({
@@ -37,7 +37,7 @@ const Page = () => {
       setLoading((prev) => ({ ...prev, login: true }));
       await dispatch(loginThunk(data)).unwrap();
       setLoading((prev) => ({ ...prev, isRedirecting: true }));
-      router.push('/dashboard');
+      router.push('/');
     } catch {
       setLoading((prev) => ({ ...prev, login: false }));
     } finally {
@@ -81,23 +81,15 @@ const Page = () => {
           <>
             <Button
               type='submit'
-              disabled={
-                loading.login || loading.google || loading.isRedirecting
-              }
+              disabled={loading.login || loading.google || loading.isRedirecting}
               className={'text-white hover:text-black hover:bg-[#007bff]'}
             >
               {loading.login ? 'Logging in...' : 'Log in'}
             </Button>
             <GoogleAuthButton
               onClick={() => authenticateWithGoogle(dispatch, setLoading)}
-              disabled={
-                loading.login || loading.google || loading.isRedirecting
-              }
-              label={
-                loading.google
-                  ? 'Continuing with Google...'
-                  : 'Log in with Google'
-              }
+              disabled={loading.login || loading.google || loading.isRedirecting}
+              label={loading.google ? 'Continuing with Google...' : 'Log in with Google'}
             />
           </>
         }

@@ -9,9 +9,12 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "@heroui/pagination": "^2.2.24",
+    "@nextui-org/react": "^2.6.11",
     "@reduxjs/toolkit": "^2.9.0",
     "axios": "^1.12.2",
     "eslint-config-prettier": "^10.1.8",
+    "lottie-react": "^2.4.1",
     "next": "15.5.4",
     "prettier": "^3.6.2",
     "react": "19.1.0",

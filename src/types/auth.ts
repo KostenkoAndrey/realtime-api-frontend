@@ -28,7 +28,6 @@ interface User {
 export interface AuthState {
   user: Partial<User>;
   isLoggedIn: boolean;
-  isRefreshing: boolean;
 }
 
 export interface RequestEmail {

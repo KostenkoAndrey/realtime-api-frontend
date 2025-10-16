@@ -1,18 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { registerThunk } from '@/redux/auth/operations';
+import { useAppDispatch } from '@/hooks/useReduxHooks';
 
+import { SignUpFormData } from '@/types/auth';
+
+import { authenticateWithGoogle } from '@/utils/authenticateWithGoogle';
 import AuthForm from '@/components/authForm';
 import TextInput from '@/components/textInput';
 import PasswordInput from '@/components/passwordInput';
 import Button from '@/components/button';
 import GoogleAuthButton from '@/components/googleAuthButton';
-import { registerThunk } from '@/redux/auth/operations';
-import { useAppDispatch } from '@/hooks/useReduxHooks';
-import { SignUpFormData } from '@/types/auth';
-import { useRouter } from 'next/navigation';
-import { authenticateWithGoogle } from '@/utils/authenticateWithGoogle';
 
 const Page = () => {
   const [loading, setLoading] = useState({
@@ -92,23 +93,15 @@ const Page = () => {
           <>
             <Button
               type='submit'
-              disabled={
-                loading.login || loading.google || loading.isRedirecting
-              }
+              disabled={loading.login || loading.google || loading.isRedirecting}
               className='text-white hover:text-black hover:bg-[#007bff]'
             >
               {loading.login ? 'Signing up...' : 'Sign up'}
             </Button>
             <GoogleAuthButton
               onClick={() => authenticateWithGoogle(dispatch, setLoading)}
-              disabled={
-                loading.login || loading.google || loading.isRedirecting
-              }
-              label={
-                loading.google
-                  ? 'Continuing with Google...'
-                  : 'Log in with Google'
-              }
+              disabled={loading.login || loading.google || loading.isRedirecting}
+              label={loading.google ? 'Continuing with Google...' : 'Log in with Google'}
             />
           </>
         }
