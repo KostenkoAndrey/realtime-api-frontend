@@ -38,11 +38,8 @@ const Page = () => {
   };
 
   const handleToggle = async () => {
-    console.log('🔘 Button clicked! isRecording:', isRecording);
-
     if (!isRecording) {
       try {
-        console.log('🎙️ Starting recording...');
         setDisplayedText('');
         fullTextRef.current = '';
         currentIndexRef.current = 0;
@@ -56,10 +53,8 @@ const Page = () => {
         ws.onmessage = (event) => {
           try {
             const data = JSON.parse(event.data);
-            console.log('📨 Received message:', data.type, data);
 
             if (data.type === 'recording_started') {
-              console.log('✅ Recording started on server');
               if (resolveConnection) {
                 resolveConnection();
                 resolveConnection = null;
@@ -68,7 +63,6 @@ const Page = () => {
             }
 
             if (data.type === 'transcript_chunk' || data.type === 'transcript_final') {
-              console.log('📝 Transcription:', data.text);
               const newText = fullTextRef.current + (fullTextRef.current ? ' ' : '') + data.text;
               fullTextRef.current = newText;
 
@@ -78,23 +72,11 @@ const Page = () => {
 
               typeNewText(newText);
             }
-
-            if (data.type === 'transcription_saved') {
-              console.log('💾 Transcription saved:', data.transcriptionId);
-              console.log('💾 Full text:', data.fullText);
-            }
-
-            if (data.type === 'error') {
-              console.error('❌ Server error:', data.error);
-            }
-          } catch (err) {
-            console.error('Error parsing message:', err);
-          }
+          } catch (err) {}
         };
 
         await new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            console.error('⏰ Timeout waiting for recording_started');
             reject(new Error('WebSocket connection timeout'));
           }, 5000);
 
@@ -104,25 +86,20 @@ const Page = () => {
           };
 
           ws.onopen = () => {
-            console.log('🔌 WebSocket connected');
             ws.send(JSON.stringify({ type: 'start_recording' }));
-            console.log('📤 Sent start_recording command');
           };
 
           ws.onerror = (err) => {
-            console.error('❌ WebSocket connection error:', err);
             clearTimeout(timeout);
             reject(err);
           };
 
-          ws.onclose = (event) => {
-            console.log('🔌 WebSocket closed:', event.code, event.reason);
+          ws.onclose = () => {
             clearTimeout(timeout);
             reject(new Error('WebSocket closed before recording started'));
           };
         });
 
-        console.log('🎤 Requesting microphone access...');
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: {
             sampleRate: 48000,
@@ -165,7 +142,6 @@ const Page = () => {
               offset += chunk.length;
             }
 
-            console.log(`📤 Sending audio: ${merged.length} samples`);
             ws.send(merged.buffer);
             audioBuffer = [];
             totalSamples = 0;
@@ -176,22 +152,15 @@ const Page = () => {
 
         chunkIntervalRef.current = setInterval(() => {
           if (ws.readyState === WebSocket.OPEN) {
-            console.log('⏰ Sending process_chunk');
             ws.send(JSON.stringify({ type: 'process_chunk' }));
           }
         }, 3000);
 
-        // 🆕 Меняем анимацию и состояние СРАЗУ после успешной инициализации
         lottiePurpleRef.current?.stop();
         lottieRedRef.current?.play();
         lottieWavesRef.current?.play();
         setIsRecording(true);
-
-        console.log('✅ Recording UI updated');
       } catch (err) {
-        console.error('❌ Error starting recording:', err);
-
-        // 🆕 Убедимся, что UI вернулся в исходное состояние при ошибке
         lottiePurpleRef.current?.play();
         lottieRedRef.current?.stop();
         lottieWavesRef.current?.stop();
@@ -204,63 +173,45 @@ const Page = () => {
       }
     } else {
       try {
-        console.log('🛑 Stopping recording...');
-
-        // 🆕 СРАЗУ меняем UI на остановленное состояние
         lottieRedRef.current?.stop();
         lottiePurpleRef.current?.play();
         lottieWavesRef.current?.stop();
         setIsRecording(false);
-        console.log('✅ UI updated to stopped state');
 
-        // Останавливаем интервал отправки чанков
         if (chunkIntervalRef.current) {
           clearInterval(chunkIntervalRef.current);
           chunkIntervalRef.current = null;
         }
 
-        // Останавливаем worklet
         if (workletRef.current) {
           workletRef.current.port.onmessage = null;
           workletRef.current.disconnect();
           workletRef.current = null;
         }
 
-        // Останавливаем микрофон
         if (mediaStreamRef.current) {
           mediaStreamRef.current.getTracks().forEach((t) => t.stop());
           mediaStreamRef.current = null;
         }
 
-        // Закрываем audio context
         if (audioContextRef.current && audioContextRef.current.state !== 'closed') {
           await audioContextRef.current.close();
           audioContextRef.current = null;
         }
 
-        // Небольшая задержка перед отправкой stop_recording
         await new Promise((resolve) => setTimeout(resolve, 100));
 
-        // Отправляем команду остановки
         if (wsRef.current?.readyState === WebSocket.OPEN) {
-          console.log('📤 Sending stop_recording');
           wsRef.current.send(JSON.stringify({ type: 'stop_recording' }));
         }
 
-        // Ждём финальных сообщений
         await new Promise((resolve) => setTimeout(resolve, 3000));
 
-        // Закрываем WebSocket
         if (wsRef.current) {
           wsRef.current.close();
           wsRef.current = null;
         }
-
-        console.log('✅ Recording stopped completely');
       } catch (err) {
-        console.error('❌ Error stopping recording:', err);
-
-        // 🆕 Даже при ошибке убедимся, что UI правильный
         lottieRedRef.current?.stop();
         lottiePurpleRef.current?.play();
         lottieWavesRef.current?.stop();
