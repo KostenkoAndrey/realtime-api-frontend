@@ -83,26 +83,15 @@ export const confirmGoogleAuthThunk = createAsyncThunk<AuthResponse, GoogleFormD
   'auth/confirm-oauth',
   async ({ code }, thunkAPI) => {
     try {
-      console.log('🔵 Sending code to backend:', code);
-
       const { data } = await ApiAuth.post<{
         status: number;
         message: string;
         data: AuthResponse;
       }>('/auth/confirm-oauth', { code });
 
-      console.log('✅ Backend response:', data);
       return data.data;
     } catch (error) {
-      console.error('❌ Error in confirmGoogleAuthThunk:', error);
-
       const e = error as AxiosError<{ message?: string; status?: number }>;
-
-      // Логируем подробности ошибки
-      console.error('❌ Status:', e.response?.status);
-      console.error('❌ Response data:', e.response?.data);
-      console.error('❌ Message:', e.message);
-
       return thunkAPI.rejectWithValue(e.response?.data?.message || e.message || 'Unknown error');
     }
   },

@@ -13,9 +13,7 @@ const Page = () => {
   const hasRun = useRef(false);
 
   useEffect(() => {
-    // Двойная защита: ref + глобальная переменная
     if (hasRun.current || isProcessing) {
-      console.log('⚠️ Already processing, skipping');
       return;
     }
 
@@ -30,31 +28,20 @@ const Page = () => {
       return;
     }
 
-    console.log('🔵 Processing OAuth code (once):', code.substring(0, 20) + '...');
-
     dispatch(confirmGoogleAuthThunk({ code }))
       .unwrap()
-      .then((data) => {
-        console.log('✅ Auth success:', data);
+      .then(() => {
         router.push('/');
       })
-      .catch((error) => {
-        console.error('❌ Auth error:', error);
+      .catch(() => {
         router.push('/login?error=auth_failed');
       })
       .finally(() => {
         isProcessing = false;
       });
-  }, []); // ✅ Пустой массив зависимостей
+  }, []);
 
-  return (
-    <div className='flex items-center justify-center h-screen'>
-      <div className='text-center'>
-        <div className='animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto'></div>
-        <p className='mt-4'>Авторизация через Google...</p>
-      </div>
-    </div>
-  );
+  return null;
 };
 
 export default Page;

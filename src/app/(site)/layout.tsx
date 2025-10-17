@@ -29,7 +29,7 @@ const Layout = ({ children }: LayoutProps) => {
   return (
     <>
       <Header />
-      <div className='max-w-[1280px] m-auto h-screen'>
+      <div className='max-w-[1280px] m-auto h-screen p-5'>
         <Navigation />
         {children}
       </div>

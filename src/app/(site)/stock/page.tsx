@@ -11,20 +11,20 @@ import { selectCountryFilter, selectFilteredContacts, selectSymbolOrNameFilter }
 
 import StockCard from '@/components/StockCard';
 import { pagination } from '@/utils/pagination';
-import { inputStyles, ITEMS_PER_PAGE } from '@/constants';
+import { INPUT_STYLES, ITEMS_PER_PAGE } from '@/constants';
+import { selectLoading } from '@/redux/stock/selectors';
 
 const Page = () => {
-  const [isClient, setIsClient] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const dispatch = useAppDispatch();
   const filtered = useAppSelector(selectFilteredContacts);
   const country = useAppSelector(selectCountryFilter);
   const symbolOrName = useAppSelector(selectSymbolOrNameFilter);
+  const isLoading = useAppSelector(selectLoading);
 
   const { currentItems: currentStocks, totalPages } = pagination(filtered, currentPage, ITEMS_PER_PAGE);
 
   useEffect(() => {
-    setIsClient(true);
     dispatch(fetchStocks());
   }, [dispatch]);
 
@@ -37,15 +37,15 @@ const Page = () => {
   };
 
   return (
-    <div className='container mx-auto px-4 py-8'>
-      <div className='max-w-[282px] m-auto flex flex-col gap-7'>
+    <>
+      <div className='max-w-[282px] m-auto flex flex-col gap-7 mt-8'>
         <Input
           placeholder='Enter your country'
           value={country}
           onChange={(e) => dispatch(changeCountry(e.target.value))}
           isClearable
           onClear={() => dispatch(changeCountry(''))}
-          classNames={inputStyles}
+          classNames={INPUT_STYLES}
           radius='full'
           size='lg'
         />
@@ -56,16 +56,18 @@ const Page = () => {
           onChange={(e) => dispatch(changeSymbolOrName(e.target.value))}
           isClearable
           onClear={() => dispatch(changeSymbolOrName(''))}
-          classNames={inputStyles}
+          classNames={INPUT_STYLES}
           radius='full'
           size='lg'
         />
       </div>
-      {isClient ? (
+      {isLoading ? (
+        <div className='m-auto text-center text-white py-8 text-2xl'>Loading...</div>
+      ) : (
         <>
           <StockCard stocks={currentStocks} />
           {totalPages > 1 && (
-            <div className='flex justify-center mt-8'>
+            <div className='flex justify-center py-8'>
               <Pagination
                 loop
                 color='primary'
@@ -86,10 +88,8 @@ const Page = () => {
             </div>
           )}
         </>
-      ) : (
-        <div className='text-center text-white py-8'>Loading...</div>
       )}
-    </div>
+    </>
   );
 };
 

@@ -1,6 +1,6 @@
 export const ITEMS_PER_PAGE = 100;
 
-export const inputStyles = {
+export const INPUT_STYLES = {
   inputWrapper: [
     'bg-[#1a1a1a]',
     'border-2',
